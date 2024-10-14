@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "page-copy-demo-client-side-solution",
+    "id": "e75db0de-b705-455e-8a04-35baf68f32ae",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.19.0"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "page-copy-demo description"
+      },
+      "longDescription": {
+        "default": "page-copy-demo description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "page-copy-demo Feature",
+        "description": "The feature that activates elements of the page-copy-demo solution.",
+        "id": "cfba37e0-e65a-4f28-bd75-bd05d2064059",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/page-copy-demo.sppkg"
+  }
+}
