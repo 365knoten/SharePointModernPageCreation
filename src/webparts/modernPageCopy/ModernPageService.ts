@@ -9,9 +9,21 @@ export interface IModernPageServiceConfiguration {
     itemID: number,
 }
 
+
+export interface IImageUrl {
+    Description: string;
+    Url: string
+}
+
+
 export interface IBasicPage {
     CanvasContent1: string;
     ID: number;
+    Title: string,
+    PageLayoutType: string,
+    BannerImageUrl: IImageUrl,
+    BannerImageOffset: string,
+    Description: string
 }
 
 
@@ -46,7 +58,7 @@ export class ModernPageService implements IModernPageService {
             this._currentWebUrl = pageContext.web.absoluteUrl;
             const url = new URL(this._currentWebUrl);
             this._currentWebServerRelativePath = url.pathname;
-            this._hostname=`https://${url.hostname}`
+            this._hostname = `https://${url.hostname}`
 
 
             Log.info(
@@ -66,8 +78,8 @@ export class ModernPageService implements IModernPageService {
         await this.createPage(destinationName);
         const targetPage = await this.getPageByName(destinationName);
         if (targetPage !== null && baseSite !== null) {
-            await this.updateCanvasContent(this._currentWebUrl, targetPage?.ID, baseSite?.CanvasContent1)
-            console.log("Done")
+            const id = targetPage.ID;
+            await this.updateCanvasContent(this._currentWebUrl, id, baseSite)
         }
     }
 
@@ -82,12 +94,13 @@ export class ModernPageService implements IModernPageService {
         );
 
 
-        const APICALL = `${weburl !== undefined ? weburl : this._currentWebUrl}/_api/web/lists/GetByTitle('Site Pages')/items??$select=ID,Title,CanvasContent1&$filter=FileLeafRef eq '${pagename}.aspx'`
+        const APICALL = `${weburl !== undefined ? weburl : this._currentWebUrl}/_api/web/lists/GetByTitle('Site Pages')/items??$select=ID,Title,CanvasContent1,PageLayoutType,BannerImageUrl,BannerImageOffset,Description&$filter=FileLeafRef eq '${pagename}.aspx'`
 
         const page = await this._httpClient.get(APICALL, SPHttpClient.configurations.v1)
             .then((response) => { return response.json() });
 
         if (page !== null && page.value !== null && page.value.length > 0) {
+
             return page.value[0] as IBasicPage
         }
         return null;
@@ -111,10 +124,10 @@ export class ModernPageService implements IModernPageService {
     }
 
 
-    private async updateCanvasContent(templateSiteUrl: string, pageID: number, content: string) {
+    private async updateCanvasContent(templateSiteUrl: string, pageID: number, templatePage: IBasicPage) {
         Log.info(
             LOG_SOURCE,
-            `Updating Content of Page with ID ${pageID} to content "${content}"`
+            `Updating Content of Page with ID ${pageID} to content "${templatePage.CanvasContent1}"`
         );
 
         const APICALL = `${this._currentWebUrl}/_api/lists/getbytitle('Site Pages')/items(${pageID})`
@@ -129,7 +142,12 @@ export class ModernPageService implements IModernPageService {
 
         const body: string = JSON.stringify({
             __metadata: { type: "SP.Data.SitePagesItem" },
-            CanvasContent1: content
+            CanvasContent1: templatePage.CanvasContent1,
+            Title: templatePage.Title,
+            PageLayoutType: templatePage.PageLayoutType,
+            BannerImageUrl: templatePage.BannerImageUrl,
+            BannerImageOffset: templatePage.BannerImageOffset,
+            Description: templatePage.Description
         });
 
         const options = {
